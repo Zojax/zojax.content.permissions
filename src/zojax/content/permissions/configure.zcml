@@ -1,0 +1,40 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:i18n="http://namespaces.zope.org/i18n"
+   xmlns:zojax="http://namespaces.zope.org/zojax"
+   i18n_domain="zojax.content.permissions">
+
+  <permission
+     id="zojax.ManagePermissions"
+     title="Manage permissions"
+     description="Allow manage all content permissions." />
+
+  <permission
+     id="zojax.ManageContentPermission"
+     title="Content adding/submitting"
+     description="Allow change content adding/submitting settings." />
+
+  <permission
+     id="zojax.ManageViewPermission"
+     title="Content visibility"
+     description="Allow change content visibility settings." />
+
+  <permission
+     id="zojax.ManageModifyPermission"
+     title="Content modification"
+     description="Allow change content modification settings." />
+
+  <include file="permissions.zcml" />
+
+  <!-- principal pemrission map -->
+  <!--adapter
+     name="content.permissions"
+     factory=".local.PrincipalPermissionMap" /-->
+
+  <!-- browser views -->
+  <include package=".browser" />
+
+  <!-- translations -->
+  <i18n:registerTranslations directory="locales" />
+
+</configure>

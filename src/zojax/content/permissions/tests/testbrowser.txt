@@ -1,0 +1,146 @@
+=============
+Browser tests
+=============
+
+    >>> from zope import component, interface, event
+    >>> from zope.testbrowser.testing import Browser
+    >>> from zope.lifecycleevent import ObjectCreatedEvent
+    >>> from zope.app.testing.functional import getRootFolder
+    >>> from zope.app.intid import IntIds
+    >>> from zope.app.intid.interfaces import IIntIds
+    >>> from zope.app.component.hooks import setSite
+    >>> from zope.app.security.interfaces import IAuthentication
+    >>> from zope.app.authentication.httpplugins import HTTPBasicAuthCredentialsPlugin
+    >>> from zojax.catalog.catalog import Catalog, ICatalog
+    >>> from zojax.content.permissions.tests.content import Container
+    >>> from zojax.authentication.interfaces import IAuthenticationConfiglet
+    >>> from zojax.authentication.interfaces import IAuthenticatorPluginFactory
+    >>> from zojax.principal.users.principal import Principal
+    >>> from zojax.principal.users.interfaces import IUsersPlugin
+    >>> from zojax.principal.password.interfaces import IPasswordTool
+    >>> from zojax.content.space.interfaces import IRootSpace
+
+    >>> root = getRootFolder()
+    >>> setSite(root)
+    >>> sm = root.getSiteManager()
+
+    >>> root['ids'] = IntIds()
+    >>> sm.registerUtility(root['ids'], IIntIds)
+
+    >>> root['catalog'] = Catalog()
+    >>> sm.registerUtility(root['catalog'], ICatalog)
+
+    >>> container = Container()
+    >>> event.notify(ObjectCreatedEvent(container))
+    >>> root['container'] = container
+    >>> interface.alsoProvides(container, IRootSpace)
+
+    >>> authconfiglet = sm.getUtility(IAuthenticationConfiglet)
+    >>> authconfiglet.installUtility()
+
+    >>> authfactory = sm.getUtility(IAuthenticatorPluginFactory, name='principal.users')
+    >>> authfactory.install()
+    >>> authfactory.activate()
+
+    >>> password = sm.getUtility(IPasswordTool).encodePassword('12345')
+
+    >>> users = sm.getUtility(IUsersPlugin)
+    >>> users['01'] = Principal('user1@zojax.net' '', 'User', '')
+    >>> users['01'].lastname = '1'
+    >>> users['01'].password = password
+    >>> users['02'] = Principal('user2@zojax.net' '', 'User', '')
+    >>> users['02'].lastname = '2'
+    >>> users['02'].password = password
+    >>> users['03'] = Principal('user3@zojax.net' '', 'User', '')
+    >>> users['03'].lastname = '3'
+    >>> users['03'].password = password
+
+
+Content permission
+------------------
+
+    >>> admin = Browser()
+    >>> admin.addHeader("Authorization", "Basic mgr:mgrpw")
+    >>> admin.handleErrors = False
+
+    >>> admin.open("http://localhost/container/context.html")
+    >>> admin.getLink('Security').click()
+    >>> print admin.contents
+    <html>
+    ...
+    <div class="z-table-container">
+      <table class="z-table">
+        <thead>
+          <tr class="z-table-pages">
+            <td colspan="4">        
+            </td>
+          </tr>
+          <tr>
+            <th></th>
+            <th>User 1</th> <th>User 2</th> <th>User 3</th>
+          </tr>
+        </thead>
+        <tbody>
+        <tr class="align-center">
+          <td class="discreet">Select all</td>
+          <td>
+            <input type="checkbox" onchange="updatePrincipalsCheckboxes(this, 'principal-zojax_pf01')" />
+          </td> <td>
+            <input type="checkbox" onchange="updatePrincipalsCheckboxes(this, 'principal-zojax_pf02')" />
+          </td> <td>
+            <input type="checkbox" onchange="updatePrincipalsCheckboxes(this, 'principal-zojax_pf03')" />
+          </td>
+        </tr>
+          </tbody>
+          <tbody>
+        <tr class="z-table-category">
+          <td colspan="4">Add content</td>
+        </tr>
+        <tr class="z-table-record align-center even">
+          <th class="nowrap">Add content 1</th>
+          <td>
+            <input type="checkbox" value="zojax.AddContent1" name="principal-zojax_pf01:list" class="principal-zojax_pf01" />
+          </td> <td>
+            <input type="checkbox" value="zojax.AddContent1" name="principal-zojax_pf02:list" class="principal-zojax_pf02" />
+          </td> <td>
+            <input type="checkbox" value="zojax.AddContent1" name="principal-zojax_pf03:list" class="principal-zojax_pf03" />
+          </td>
+        </tr> <tr class="z-table-record align-center odd">
+          <th class="nowrap">Add content 2</th>
+          <td>
+            <input type="checkbox" value="zojax.AddContent2" name="principal-zojax_pf01:list" class="principal-zojax_pf01" />
+          </td> <td>
+            <input type="checkbox" value="zojax.AddContent2" name="principal-zojax_pf02:list" class="principal-zojax_pf02" />
+          </td> <td>
+            <input type="checkbox" value="zojax.AddContent2" name="principal-zojax_pf03:list" class="principal-zojax_pf03" />
+          </td>
+        </tr>
+    ...
+    </html>
+
+    >>> admin.getControl(name="principal-zojax_pf01:list").value = ['zojax.AddContent1']
+    >>> admin.getControl(name="form.updatePrincipalPermissions").click()
+
+
+check user1 permission
+
+    >>> user1 = Browser()
+    >>> user1.handleErrors = False
+    >>> user1.open("http://localhost/login.html")
+    >>> user1.getControl('Login Name').value = 'user1@zojax.net'
+    >>> user1.getControl('Password').value = '12345'
+    >>> user1.getControl('Log in').click()
+
+    >>> user1.open("http://localhost/container/+/content1/")
+    >>> user1.getControl('Title').value = u'Content2'
+    >>> user1.getControl(name="content.add.buttons.add").click()
+    
+    >>> user1.open("http://localhost/container/")
+    >>> print user1.contents
+    <html>
+    ...
+    <td><a href="http://localhost/container/Content1/">Content1</a></td>
+    ...
+    </html>
+
+    >>> setSite(None)

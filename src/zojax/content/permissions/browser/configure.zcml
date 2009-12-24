@@ -1,0 +1,21 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:zojax="http://namespaces.zope.org/zojax"
+   i18n_domain="zojax.content.permissions">
+
+  <zojax:pagelet
+     name="permissions"
+     type="form.subform"
+     for="zojax.content.type.interfaces.IShareableContent
+	  zojax.content.forms.interfaces.ISecurityStep"
+     class=".wizard.ContentPermissions"
+     provides="zojax.layoutform.interfaces.IPageletFormView"
+     permission="zojax.ManageContentPermission"
+     weight="100" />
+
+  <zojax:pagelet
+     type="form"
+     template="wizard.pt"
+     for=".wizard.ContentPermissions" />
+
+</configure>

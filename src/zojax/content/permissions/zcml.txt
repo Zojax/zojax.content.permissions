@@ -1,0 +1,102 @@
+=============================
+contentpermissions directives
+=============================
+
+Registration new permissions with zcml directive.
+
+   >>> from zope import interface, component, schema
+   >>> from zope.interface import verify
+
+Load directive declaration
+
+   >>> import zojax.content.permissions
+   >>> from zope.configuration import xmlconfig
+   >>> context = xmlconfig.file('meta.zcml', zojax.content.permissions)
+
+   >>> from zojax.content.permissions import interfaces, tests
+
+
+Content permission
+------------------
+
+   >>> context = xmlconfig.string("""
+   ... <configure
+   ...    xmlns="http://namespaces.zope.org/zope"
+   ...    xmlns:zojax="http://namespaces.zope.org/zojax" i18n_domain="zope">
+   ...   <include package="zope.security" file="meta.zcml" />
+   ... 
+   ...   <permission
+   ...     id="zojax.ManageAddPermission"
+   ...     title="Content adding"
+   ...     description="Allow change content adding settings." />
+   ... 
+   ...   <permission
+   ...     id="zojax.ManagePermissions"
+   ...     title="Permission for permissions management"
+   ...     description="Permission for permissions management." />
+   ... 
+   ...   <zojax:contentpermission
+   ...     permission="zope.Public"
+   ...     managepermission="zojax.ManageAddPermission"
+   ...     category="zojax.content.permissions.interfaces.IManagementPermission" />
+   ... </configure>""", context)
+   Traceback (most recent call last):
+   ...
+   ZopeXMLConfigurationError...zope.Public permission is not allowed.
+
+   >>> class ITestPermission(interface.Interface):
+   ...     id = schema.Int(
+   ...         title = u'Id',
+   ...         default = 10,
+   ...         required = True)
+
+   >>> context = xmlconfig.string("""
+   ... <configure
+   ...    xmlns:zojax="http://namespaces.zope.org/zojax" i18n_domain="zope">
+   ... 
+   ...   <zojax:contentpermission
+   ...     permission="zojax.ManageAddPermission"
+   ...     managepermission="zojax.ManagePermissions"
+   ...     category="zojax.content.permissions.TESTS.ITestPermission" />
+   ... </configure>""", context)
+   Traceback (most recent call last):
+   ...
+   ZopeXMLConfigurationError...('Required field is missing', 'id')
+
+   >>> context = xmlconfig.string("""
+   ... <configure
+   ...    xmlns:zojax="http://namespaces.zope.org/zojax" i18n_domain="zope">
+   ... 
+   ...   <zojax:contentpermission
+   ...     permission="zojax.ManageAddPermission"
+   ...     managepermission="zojax.ManagePermissions"
+   ...     category="zojax.content.permissions.TESTS.ITestPermission"
+   ...     id="dddssd" />
+   ... </configure>""", context)
+   Traceback (most recent call last):
+   ...
+   ZopeXMLConfigurationError...invalid literal for int()...
+
+   >>> class ITestPermission(interface.Interface):
+   ...     id = schema.Int(
+   ...         title = u'Id',
+   ...         default = 10,
+   ...         required = False)
+
+   >>> context = xmlconfig.string("""
+   ... <configure
+   ...    xmlns:zojax="http://namespaces.zope.org/zojax" i18n_domain="zope">
+   ... 
+   ...   <zojax:contentpermission
+   ...     permission="zojax.ManageAddPermission"
+   ...     managepermission="zojax.ManagePermissions"
+   ...     category="zojax.content.permissions.TESTS.ITestPermission" />
+   ... </configure>""", context)
+
+   >>> from zope.annotation.interfaces import IAttributeAnnotatable
+
+   >>> class Content(object):
+   ...     interface.implements(IAttributeAnnotatable)
+
+   >>> component.getAdapter(Content(), interfaces.IContentPermission, 'zojax.ManageAddPermission')
+   <zojax.content.permissions.permission.Permission<zojax.ManageAddPermission> ...>

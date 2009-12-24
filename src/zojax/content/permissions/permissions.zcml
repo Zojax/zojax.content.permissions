@@ -1,0 +1,75 @@
+<configure
+   xmlns="http://namespaces.zope.org/zope"
+   xmlns:zojax="http://namespaces.zope.org/zojax"
+   xmlns:browser="http://namespaces.zope.org/browser"
+   i18n_domain="zojax.content.permission">
+
+  <!-- permissions categories -->
+  <interface
+     name="Add content"
+     interface=".interfaces.IAddPermission"
+     type="zojax.security.interfaces.IPermissionCategoryType" />
+
+  <interface
+     name="General settings"
+     interface=".interfaces.IGeneralSettingsPermission"
+     type="zojax.security.interfaces.IPermissionCategoryType" />
+
+  <interface
+     name="Management"
+     interface=".interfaces.IManagementPermission"
+     type="zojax.security.interfaces.IPermissionCategoryType" />
+
+  <interface
+     name="View"
+     interface=".interfaces.IViewPermission"
+     type="zojax.security.interfaces.IPermissionCategoryType" />
+
+  <interface
+     name="Submit draft"
+     interface=".interfaces.ISubmitPermission"
+     type="zojax.security.interfaces.IPermissionCategoryType" />
+
+  <!-- global permissions -->
+  <zojax:permission
+     permission="zojax.ManagePermissions"
+     category=".interfaces.IManagementPermission" />
+
+  <zojax:permission
+     permission="zojax.ManageContentPermission"
+     category=".interfaces.IManagementPermission" />
+
+  <zojax:permission
+     permission="zojax.ManageViewPermission"
+     category=".interfaces.IManagementPermission" />
+
+  <zojax:permission
+     permission="zojax.ManageModifyPermission"
+     category=".interfaces.IManagementPermission" />
+
+  <!-- management permissions -->
+  <zojax:contentpermission
+     permission="zojax.ManageContentPermission"
+     managepermission="zojax.ManagePermissions"
+     for="zojax.content.space.interfaces.IRootSpace"
+     category=".interfaces.IManagementPermission" />
+
+  <zojax:contentpermission
+     permission="zojax.ManageViewPermission"
+     managepermission="zojax.ManagePermissions"
+     for="zojax.content.space.interfaces.IRootSpace"
+     category=".interfaces.IManagementPermission" />
+
+  <zojax:contentpermission
+     permission="zojax.ManageModifyPermission"
+     managepermission="zojax.ManagePermissions"
+     for="zojax.content.space.interfaces.IRootSpace"
+     category=".interfaces.IManagementPermission" />
+
+  <!-- content view permission -->
+  <zojax:contentpermission
+     permission="zope.View"
+     managepermission="zojax.ManageViewPermission"
+     category="zojax.content.permissions.interfaces.IViewPermission" />
+
+</configure>
