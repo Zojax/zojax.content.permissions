@@ -1,0 +1,81 @@
+<tal:block i18n:domain="zojax.content.permissions"
+	   tal:define="principals context/principals">
+  <h2 i18n:translate="">Content permissions</h2>
+  <div class="z-page-description">
+    Modify principal permissions for this content.</div>
+
+  <div class="z-table-container">
+    <table class="z-table">
+      <thead>
+	<tr class="z-table-pages">
+	  <td tal:attributes="colspan python:len(principals)+1">
+	    <tal:block content="structure context/batch/@@pagelet/batch.view" />
+	  </td>
+	</tr>
+	<tr>
+	  <th></th>
+	  <th tal:repeat="principal principals"
+	      tal:content="principal/title"></th>
+	</tr>
+      </thead>
+      <tbody>
+	<tr class="align-center">
+	  <td class="discreet" i18n:translate="">Select all</td>
+	  <td tal:repeat="principal principals">
+	    <input type="checkbox" tal:attributes="onchange string:updatePrincipalsCheckboxes(this, 'principal-${principal/name}');;" />
+	  </td>
+	</tr>
+      </tbody>
+      <tbody tal:repeat="cat context/permissions">
+	<tr class="z-table-category">
+	  <td tal:content="cat/name" i18n:translate=""
+	      tal:attributes="colspan python:len(principals)+1"></td>
+	</tr>
+	<tr tal:repeat="perm cat/perms"
+	    tal:attributes="class python:repeat['perm'].odd() and 
+			    'z-table-record align-center odd' or 
+			    'z-table-record align-center even'">
+	  <th class="nowrap" tal:content="perm/title"
+	      i18n:translate=""></th>
+	  <td tal:repeat="principal principals">
+	    <input type="checkbox"
+		   tal:attributes="value perm/id;
+				   name string:principal-${principal/name}:list;
+				   checked python:principal['id'] in perm['settings'];
+				   class string:principal-${principal/name}" />
+	  </td>
+	</tr>
+      </tbody>
+    </table>
+  </div>
+  <br />
+  <div class="z-form-controls">
+    <hr />
+    <input type="submit" name="form.updatePrincipalPermissions"
+	   class="z-form-button" value="Update permissions"
+	   i18n:attributes="value" />
+  </div>
+  <input type="hidden" name="bstart"
+	 tal:attributes="value request/bstart|nothing" />
+</tal:block>
+
+<script>
+<!--
+function updatePrincipalsCheckboxes(master, className) {
+    newState = master.checked;
+    objects = document.getElementsByTagName("input")
+    count = objects.length;
+    for(x = 0; x < count; x++) {
+        obj = objects[x];
+        if (obj.type == "checkbox") {
+            var classes = obj.className.split(" ");
+            for (var i = 0; i < classes.length; i++)
+                if (classes[i] == className) {
+                    obj.checked = newState;
+                    break;
+                }
+        }
+    }
+}
+-->
+</script>
