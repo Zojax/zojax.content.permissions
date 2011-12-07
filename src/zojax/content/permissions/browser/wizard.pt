@@ -1,7 +1,7 @@
 <tal:block i18n:domain="zojax.content.permissions"
 	   tal:define="principals context/principals">
   <h2 i18n:translate="">Content permissions</h2>
-  <div class="z-page-description">
+  <div class="z-page-description" i18n:translate="">
     Modify principal permissions for this content.</div>
 
   <div class="z-table-container">
