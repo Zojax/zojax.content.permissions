@@ -28,15 +28,14 @@
       </tbody>
       <tbody tal:repeat="cat context/permissions">
 	<tr class="z-table-category">
-	  <td tal:content="cat/name" i18n:translate=""
+	  <td tal:content="cat/name"
 	      tal:attributes="colspan python:len(principals)+1"></td>
 	</tr>
 	<tr tal:repeat="perm cat/perms"
 	    tal:attributes="class python:repeat['perm'].odd() and 
 			    'z-table-record align-center odd' or 
 			    'z-table-record align-center even'">
-	  <th class="nowrap" tal:content="perm/title"
-	      i18n:translate=""></th>
+	  <th class="nowrap" tal:content="perm/title"></th>
 	  <td tal:repeat="principal principals">
 	    <input type="checkbox"
 		   tal:attributes="value perm/id;
