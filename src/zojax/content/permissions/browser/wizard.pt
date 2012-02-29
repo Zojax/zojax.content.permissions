@@ -1,5 +1,6 @@
 <tal:block i18n:domain="zojax.content.permissions"
-	   tal:define="principals context/principals">
+	   tal:define="principals context/principals;
+	               roles context/roles">
   <h2 i18n:translate="">Content permissions</h2>
   <div class="z-page-description" i18n:translate="">
     Modify principal permissions for this content.</div>
@@ -32,8 +33,8 @@
 	      tal:attributes="colspan python:len(principals)+1"></td>
 	</tr>
 	<tr tal:repeat="perm cat/perms"
-	    tal:attributes="class python:repeat['perm'].odd() and 
-			    'z-table-record align-center odd' or 
+	    tal:attributes="class python:repeat['perm'].odd() and
+			    'z-table-record align-center odd' or
 			    'z-table-record align-center even'">
 	  <th class="nowrap" tal:content="perm/title"></th>
 	  <td tal:repeat="principal principals">
@@ -56,6 +57,61 @@
   </div>
   <input type="hidden" name="bstart"
 	 tal:attributes="value request/bstart|nothing" />
+
+  <!-- roles -->
+  <hr /><br />
+
+  <h2 i18n:translate="">Content permissions</h2>
+  <div class="z-page-description" i18n:translate="">
+    Modify role permissions for this content.</div>
+
+  <div class="z-table-container">
+    <table class="z-table">
+      <thead>
+	<tr>
+	  <th></th>
+	  <th tal:repeat="role roles"
+	      tal:content="role/title"></th>
+	</tr>
+      </thead>
+      <tbody>
+      <tal:block tal:repeat="cat context/permissions">
+	<tr class="z-table-category">
+	  <td tal:content="cat/name"
+	      tal:attributes="colspan python:len(roles)+1"></td>
+	</tr>
+	<tr tal:repeat="perm cat/perms"
+	    tal:attributes="class python:repeat['perm'].odd() and
+			    'z-table-record align-center odd' or
+			    'z-table-record align-center even'">
+	  <th tal:content="perm/title"></th>
+	  <td tal:repeat="role roles">
+        <tal:block define="setting python:perm['settingsR'][role['id']]">
+		  <input type="radio" value="1"
+		       tal:attributes="name string:role-${role/id}[${perm/id}];
+		                       checked python:setting==1" /> allow
+		  <br />
+		  <input type="radio" value="2"
+		       tal:attributes="name string:role-${role/id}[${perm/id}];
+		                       checked python:setting==2" /> deny
+		  <br />
+		  <input type="radio" value="3"
+		       tal:attributes="name string:role-${role/id}[${perm/id}];
+		                       checked python:setting==3" /> default
+	    </tal:block>
+	  </td>
+	</tr>
+      </tal:block>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="z-form-controls">
+    <hr />
+    <input type="submit" name="form.updatePermissions" class="z-form-button"
+	   value="Update" i18n:attributes="value" />
+  </div>
+
 </tal:block>
 
 <script>
