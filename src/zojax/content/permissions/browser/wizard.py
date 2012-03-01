@@ -32,7 +32,7 @@ from zojax.principal.field.utils import searchPrincipals
 from zojax.content.type.interfaces import IDraftedContent
 from zojax.principal.profile.interfaces import IPersonalProfile
 from zojax.statusmessage.interfaces import IStatusMessage
-from zope.securitypolicy.interfaces import Allow, Unset, IRolePermissionManager
+from zope.securitypolicy.interfaces import Allow, Unset, Deny, IRolePermissionManager
 
 from zojax.content.permissions.utils import updatePermissions
 from zojax.content.permissions.interfaces import _, IContentPermission
