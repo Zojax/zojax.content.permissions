@@ -124,10 +124,13 @@ Content permission
 
 check user1 permission
 
-
     >>> user1 = Browser()
-    >>> user1.addHeader("Authorization", "Basic user1:userpw1")
     >>> user1.handleErrors = False
+    >>> user1.open("http://localhost/login.html")
+    >>> user1.getControl('Login Name').value = 'user1@zojax.net'
+    >>> user1.getControl('Password').value = '12345'
+    >>> user1.getControl('Log in').click()
+
     >>> user1.open("http://localhost/container/+/content1/")
     >>> user1.getControl('Title').value = u'Content2'
     >>> user1.getControl(name="content.add.buttons.add").click()
