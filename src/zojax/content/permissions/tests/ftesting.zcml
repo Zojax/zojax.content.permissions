@@ -58,6 +58,7 @@
 
   <grant role="zope.Manager" principal="zope.mgr" />
   <grant permission="zope.View" principal="zope.user1" />
+  <grant permission="zojax.AddContent1" principal="zope.user1" />
   <grant permission="zope.View" principal="zope.user2" />
 
   <grantAll role="zope.Manager" />
